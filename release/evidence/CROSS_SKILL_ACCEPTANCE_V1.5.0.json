@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-11-23T11:44:11.125373+00:00",
+  "cleaner_version": "1.5.0",
+  "database_version": "0.6.0",
+  "auto_approve": {
+    "duplicates": 0,
+    "recorded": 2,
+    "safe_items": 2,
+    "skipped": 0
+  },
+  "approved": {
+    "approved": 2,
+    "deferred": 0,
+    "pending": 0,
+    "rejected": 0,
+    "revoked": 0
+  },
+  "database_handoff": {
+    "already_applied": 0,
+    "blocked_items": 0,
+    "deletes_succeeded": 0,
+    "pending_post_write_revocations": 0,
+    "planned_deletes": 0,
+    "planned_writes": 2,
+    "writes_succeeded": 2
+  },
+  "health": "ok",
+  "memory_ids": [
+    "mem_4fa9350470f94382998e560823bd0188",
+    "mem_c171b607f4364536b3ebe98398f549bd"
+  ],
+  "search_hits": 1,
+  "context_current": 1,
+  "context_conflicts": 0,
+  "context_history": 0,
+  "mcp_context": "context_pack",
+  "cleanup": {
+    "contract_version": "skill-grant-cleanup-v1",
+    "removed_grants": 1,
+    "retention_days": 0,
+    "status": "completed"
+  },
+  "packages": {
+    "conversation": {
+      "path": "E:\\污染治理---数据库\\dist\\final-v1.5.0\\conversation-context-cleaner-v1.5.0.zip",
+      "sha256": "03901b13000c1d011bd16b6d2f344739728eea26d7792e4f72e309c41443c2d8",
+      "bytes": 151321
+    },
+    "database": {
+      "path": "E:\\污染治理---数据库\\dist\\final-v1.5.0\\database-installer-core-v0.6.0.zip",
+      "sha256": "d3bcfdd7751df2f95e15ec5bdc9ee9e6ae573cf885b4a46434e0cc5809fd7cea",
+      "bytes": 209489
+    }
+  },
+  "limitations": [
+    "real embedding not called",
+    "real Milvus not called; fake sync used",
+    "final answer wording remains caller LLM responsibility"
+  ]
+}

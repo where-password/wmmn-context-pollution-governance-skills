@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-11-23T13:56:03.372691+00:00",
+  "collection": "memory_core_final_v1_acceptance",
+  "read_alias": "memory_read_alias_final_v1_acceptance_test",
+  "write_alias": "memory_write_alias_final_v1_acceptance_test",
+  "real_milvus": true,
+  "embedding_mode": "deterministic-local-fake",
+  "created_collection": false,
+  "sync_status": "completed",
+  "processed": {
+    "fts_unchanged": 2,
+    "vector_synced": 2
+  },
+  "outbox_after": {
+    "done": 4
+  },
+  "milvus_count": 2,
+  "query_hits": 2,
+  "health_status": "warning",
+  "health_checks": {
+    "canonical_exists": true,
+    "schema_migrations": true,
+    "memory_items": true,
+    "fts_table": true,
+    "memory_evidence": true,
+    "memory_outbox": true,
+    "fts_sync_state": true,
+    "integrity": true,
+    "foreign_keys": true,
+    "migrations_complete": true,
+    "scope_exists": true,
+    "verified_evidence": true,
+    "assertion_states": true,
+    "fts_consistency": true,
+    "milvus_alias_target_matches": true,
+    "milvus_collection_metadata": true,
+    "milvus_embedding_model_matches": true,
+    "milvus_embedding_dimension_matches": true,
+    "milvus_index_schema_matches": true,
+    "milvus_count_matches": true,
+    "milvus_readonly_checks_complete": true
+  },
+  "health_warnings": [
+    "milvus count and metadata checks passed; full 5-tuple reconcile was not performed"
+  ],
+  "health_counts": {
+    "active": 2,
+    "missing_verified_evidence": 0,
+    "invalid_assertion_states": 0,
+    "fts_mismatches": 0,
+    "outbox_pending": 0,
+    "outbox_poison": 0,
+    "milvus_count": 2
+  },
+  "reconcile_passed": true,
+  "reconcile_differences": 0,
+  "query_scope": {
+    "workspace_id": "ws_final",
+    "project_id": "proj_final",
+    "domain_profile": "generic",
+    "max_sensitivity": "private"
+  }
+}

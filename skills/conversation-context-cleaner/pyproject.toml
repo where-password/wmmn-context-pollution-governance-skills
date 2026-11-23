@@ -1,0 +1,8 @@
+[project]
+name = "conversation-context-cleaner"
+version = "1.5.0"
+description = "Review-only deterministic cleaner for controlled conversation JSONL"
+requires-python = ">=3.11"
+
+[tool.unittest]
+start-directory = "tests"

@@ -1,0 +1,19 @@
+{
+  "manifest_version": "1.0.0",
+  "dataset_id": "database-installer-demo-v1",
+  "dataset_version": "1.0.0",
+  "schema_contract": "memory-core-v1.2",
+  "seed": 20261121,
+  "base_timestamp_utc": 1704067200,
+  "workspace_id": "demo",
+  "project_id": "demo_project",
+  "domain_profile": "generic",
+  "profile_version": "1.0.0",
+  "owner_principal_id": "demo-owner",
+  "fixture_file": "synthetic_memories.jsonl",
+  "fixture_sha256": "47bac0921a03efded4ae93d05a1cd88e01691295ce0b33b787ff9a7b4e361d5b",
+  "expected_record_hash": "ae39eb93df1c009e38c85840b92c2e14da8b3ca984778e3f9303dfa66ff73ec9",
+  "record_count": 3,
+  "synthetic": true,
+  "redacted": true
+}

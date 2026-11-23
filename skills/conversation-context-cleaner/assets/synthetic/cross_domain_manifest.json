@@ -1,0 +1,10 @@
+{
+  "fixture_version": "1.0.0",
+  "synthetic": true,
+  "redacted": true,
+  "contract_version": "controlled_conversation_jsonl_v1_snapshot",
+  "conversation_ids": ["conv_support_ops_001", "conv_sales_ops_002"],
+  "message_count": 6,
+  "purpose": "Verify that shared generic words across different conversations and domains do not merge groups.",
+  "contains_secrets": false
+}

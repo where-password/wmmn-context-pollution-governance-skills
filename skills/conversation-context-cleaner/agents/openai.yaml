@@ -1,0 +1,3 @@
+interface:
+  display_name: "Conversation Context Cleaner"
+  short_description: "Clean conversation JSONL into review-ready evidence"

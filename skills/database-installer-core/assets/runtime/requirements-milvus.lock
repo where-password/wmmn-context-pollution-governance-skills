@@ -1,0 +1,3 @@
+# Optional V1.5 Milvus Add-on dependencies.
+# Install only into the Skill-owned isolated runtime; do not install into system Python.
+pymilvus==2.6.18

@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:conversation-memory-handoff-v1:schema",
+  "title": "conversation-memory-handoff-v1",
+  "x-contract-version": "conversation-memory-handoff-v1",
+  "oneOf": [
+    {"$ref": "#/$defs/MemoryObservation"},
+    {"$ref": "#/$defs/StateTransition"},
+    {"$ref": "#/$defs/MemoryWriteHandoffItem"},
+    {"$ref": "#/$defs/PendingReviewItem"},
+    {"$ref": "#/$defs/HandoffManifest"}
+  ],
+  "$defs": {
+    "HandoffEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "source_unit_id", "quote"],
+      "properties": {
+        "evidence_id": {"type": "string", "minLength": 1},
+        "source_unit_id": {"type": "string", "minLength": 1},
+        "quote": {"type": "string", "minLength": 1},
+        "locator_json": {"type": "object"},
+        "status": {"enum": ["verified", "rejected", "unresolved"], "default": "unresolved"}
+      }
+    },
+    "HandoffSourceScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_type", "ref"],
+      "properties": {
+        "scope_type": {"type": "string", "minLength": 1},
+        "ref": {"type": "string", "minLength": 1},
+        "start": {"type": ["string", "integer", "null"]},
+        "end": {"type": ["string", "integer", "null"]},
+        "locator_json": {"type": "object"}
+      }
+    },
+    "MemoryObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id", "conversation_id", "source_sequence", "observed_at", "claim_key",
+        "scope_key", "memory_type", "content", "assertion_source", "verification_state",
+        "epistemic_status", "state_kind", "evidences"
+      ],
+      "properties": {
+        "observation_id": {"type": "string", "minLength": 1},
+        "conversation_id": {"type": "string", "minLength": 1},
+        "source_sequence": {"type": "integer", "minimum": 0},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "claim_key": {"type": "string", "minLength": 1},
+        "scope_key": {"type": "string", "minLength": 1},
+        "memory_type": {
+          "enum": ["fact", "requirement", "constraint", "decision", "task", "procedure", "issue", "solution", "artifact", "relationship", "event", "preference", "open_question"]
+        },
+        "content": {"type": "string", "minLength": 1},
+        "assertion_source": {
+          "enum": ["user_decision", "user_preference", "user_request", "user_report", "primary_source", "external_document", "tool_output", "assistant_proposal", "assistant_inference", "legacy_unknown"]
+        },
+        "verification_state": {
+          "enum": ["not_required", "quote_verified", "user_confirmed", "source_verified", "tool_verified", "unverified", "conflict", "legacy_unclassified"]
+        },
+        "epistemic_status": {"type": "string", "minLength": 1},
+        "state_kind": {
+          "enum": ["discussion", "hypothesis", "decision", "fact", "task", "result", "preference", "constraint", "conflict"]
+        },
+        "evidences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/HandoffEvidence"}
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
+        "effective_from": {"type": ["string", "null"], "format": "date-time"},
+        "effective_to": {"type": ["string", "null"], "format": "date-time"},
+        "review_status": {"enum": ["pending_review", "needs_review", "accepted", "rejected"], "default": "pending_review"}
+      }
+    },
+    "StateTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transition_id", "claim_key", "scope_key", "to_observation_id", "transition_kind", "reason", "evidences"],
+      "properties": {
+        "transition_id": {"type": "string", "minLength": 1},
+        "claim_key": {"type": "string", "minLength": 1},
+        "scope_key": {"type": "string", "minLength": 1},
+        "to_observation_id": {"type": "string", "minLength": 1},
+        "transition_kind": {
+          "enum": ["new", "unchanged", "supersedes", "conflict", "needs_review", "historical_only"]
+        },
+        "reason": {"type": "string", "minLength": 1},
+        "evidences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/HandoffEvidence"}
+        },
+        "from_observation_id": {"type": ["string", "null"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
+        "review_status": {"enum": ["pending_review", "needs_review", "accepted", "rejected"], "default": "pending_review"}
+      }
+    },
+    "MemoryWriteHandoffItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idempotency_key", "operation_id", "workspace_id", "project_id", "domain_profile",
+        "profile_version", "memory_type", "content", "source_id", "source_unit_id",
+        "source_scope", "claim_key", "scope_key", "observed_at", "transition_kind", "evidences"
+      ],
+      "properties": {
+        "idempotency_key": {"type": "string", "minLength": 1},
+        "operation_id": {"type": "string", "minLength": 1},
+        "workspace_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "task_id": {"type": ["string", "null"]},
+        "conversation_id": {"type": ["string", "null"]},
+        "domain_profile": {"type": "string", "minLength": 1},
+        "profile_version": {"type": "string", "minLength": 1},
+        "memory_type": {
+          "enum": ["fact", "requirement", "constraint", "decision", "task", "procedure", "issue", "solution", "artifact", "relationship", "event", "preference", "open_question"]
+        },
+        "subtype": {"type": ["string", "null"]},
+        "subject": {"type": ["string", "null"]},
+        "entity_type": {"type": ["string", "null"]},
+        "entity_id": {"type": ["string", "null"]},
+        "content": {"type": "string", "minLength": 1},
+        "importance": {"enum": ["critical", "high", "medium", "low"], "default": "medium"},
+        "declared_sensitivity": {"enum": ["public", "internal", "private", "secret"], "default": "private"},
+        "requested_visibility": {"enum": ["private", "workspace"], "default": "private"},
+        "assertion_source": {
+          "enum": ["user_decision", "user_preference", "user_request", "user_report", "primary_source", "external_document", "tool_output", "assistant_proposal", "assistant_inference", "legacy_unknown"]
+        },
+        "verification_state": {
+          "enum": ["not_required", "quote_verified", "user_confirmed", "source_verified", "tool_verified", "unverified", "conflict", "legacy_unclassified"]
+        },
+        "effective_from": {"type": ["string", "null"], "format": "date-time"},
+        "effective_to": {"type": ["string", "null"], "format": "date-time"},
+        "source_id": {"type": "string", "minLength": 1},
+        "source_unit_id": {"type": "string", "minLength": 1},
+        "source_scope": {"$ref": "#/$defs/HandoffSourceScope"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
+        "supersedes_ref": {"type": ["string", "null"]},
+        "supersedes_id": {"type": ["string", "null"]},
+        "expected_version": {"type": ["integer", "null"], "minimum": 0},
+        "domain_payload": {"type": "object"},
+        "evidences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/HandoffEvidence"}
+        },
+        "claim_key": {"type": "string", "minLength": 1},
+        "scope_key": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "transition_kind": {
+          "enum": ["new", "unchanged", "supersedes", "conflict", "needs_review", "historical_only"]
+        }
+      }
+    },
+    "PendingReviewItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_item_id", "claim_key", "scope_key", "reason", "transition_kind", "evidences"],
+      "properties": {
+        "review_item_id": {"type": "string", "minLength": 1},
+        "claim_key": {"type": "string", "minLength": 1},
+        "scope_key": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1},
+        "transition_kind": {"enum": ["conflict", "needs_review"]},
+        "evidences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/HandoffEvidence"}
+        },
+        "observation_id": {"type": ["string", "null"]},
+        "conversation_id": {"type": ["string", "null"]},
+        "content": {"type": ["string", "null"]},
+        "related_observation_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "review_status": {"enum": ["pending_review", "needs_review"], "default": "pending_review"},
+        "suggested_action": {"type": "string", "minLength": 1, "default": "manual_review_required"}
+      }
+    },
+    "HandoffManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handoff_id", "created_at", "plan_id", "run_id", "source_sha256", "workspace_id",
+        "project_id", "conversation_ids", "domain_profile", "profile_version", "artifact_hashes", "counts"
+      ],
+      "properties": {
+        "handoff_id": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time"},
+        "plan_id": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "source_sha256": {"type": "string", "minLength": 1},
+        "workspace_id": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "conversation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "domain_profile": {"type": "string", "minLength": 1},
+        "profile_version": {"type": "string", "minLength": 1},
+        "artifact_hashes": {
+          "type": "object",
+          "additionalProperties": {"type": "string", "minLength": 1}
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "contract_version": {"const": "conversation-memory-handoff-v1", "default": "conversation-memory-handoff-v1"},
+        "production_writes": {"const": false, "default": false},
+        "canonical_writes": {"const": false, "default": false},
+        "milvus_writes": {"const": false, "default": false},
+        "alias_changes": {"const": false, "default": false},
+        "contains_security_fields": {"const": false, "default": false}
+      }
+    }
+  }
+}

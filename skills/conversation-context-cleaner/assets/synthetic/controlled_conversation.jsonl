@@ -1,0 +1,6 @@
+{"conversation_id":"conv_synthetic_001","message_id":"m001","role":"user","timestamp":"2026-11-21T09:00:00+08:00","sequence":0,"text":"DECISION: 采用隔离 workspace 做首期验收。","attachments":[],"metadata":{"topic_key":"scope"}}
+{"conversation_id":"conv_synthetic_001","message_id":"m002","role":"assistant","timestamp":"2026-11-21T09:00:05+08:00","sequence":1,"text":"收到，本轮只生成审查材料。","attachments":[],"metadata":{"topic_key":"scope"}}
+{"conversation_id":"conv_synthetic_001","message_id":"m003","role":"user","timestamp":"2026-11-21T09:01:00+08:00","sequence":2,"text":"OPEN_QUESTION: 是否需要接入真实 LLM？","attachments":[],"metadata":{"topic_key":"scope"}}
+{"conversation_id":"conv_synthetic_001","message_id":"m004","role":"assistant","timestamp":"2026-11-21T09:01:05+08:00","sequence":3,"text":"PROPOSAL: 首期只使用确定性规则提取。","attachments":[],"metadata":{"topic_key":"scope"}}
+{"conversation_id":"conv_synthetic_001","message_id":"m005","role":"user","timestamp":"2026-11-21T09:10:00+08:00","sequence":4,"text":"REQUIREMENT: apply 必须显式确认。","attachments":[],"metadata":{"topic_key":"apply","topic_boundary":true}}
+{"conversation_id":"conv_synthetic_001","message_id":"m006","role":"user","timestamp":"2026-11-21T09:10:30+08:00","sequence":5,"text":"FACT: 审查包只包含建议，不记录决定。","attachments":[],"metadata":{"topic_key":"apply"}}

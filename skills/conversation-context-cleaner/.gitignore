@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+work/
+.pytest_cache/
+.idea/
+.DS_Store
+*.zip
+.loop-agent/

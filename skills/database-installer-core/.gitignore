@@ -1,0 +1,17 @@
+.pytest_cache/
+__pycache__/
+*.pyc
+work/.pytest-*/
+work/smoke-demo*/
+work/smoke-*.json
+.runtime/
+workspace/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+.venv/
+.idea/
+uv.lock
+
+.milvus/
+work/

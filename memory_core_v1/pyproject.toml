@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "generic-memory-core"
+version = "0.1.0"
+description = "Generic Memory Core V1.1 local verifiable core"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2,<3"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["memory_core*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --basetemp=work/.pytest-portable-v1"
+pythonpath = ["src"]

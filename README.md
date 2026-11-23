@@ -1,0 +1,189 @@
+# Conversation Memory Skills
+
+[![tests](https://github.com/where-password/conversation-memory-skills/actions/workflows/tests.yml/badge.svg)](https://github.com/where-password/conversation-memory-skills/actions/workflows/tests.yml)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**把受控对话整理成可审查的知识，再存入本地、可检索、可审计的长期记忆。**
+
+**Clean controlled conversations into reviewable knowledge, then persist it in a local, searchable, auditable memory layer.**
+
+`wmmn · 我密码呢` maintains this public beta for personal, single-machine use. It is not a generic chatbot and it does not replace the user's LLM. The Skills split responsibilities so conversation cleaning, evidence review, database writes, indexing, retrieval, and final answer generation do not collapse into one opaque pipeline.
+
+## Status
+
+| Component | Version | Status | Responsibility |
+| --- | --- | --- | --- |
+| `conversation-context-cleaner` | 1.5.0 | Working version | Controlled JSONL cleaning, candidate extraction, evidence checks, review, approval, and database handoff |
+| `database-installer-core` | 0.6.0 | Working version | SQLite installation, preset, verified handoff ingest, search, Context Pack, MCP, health, backup, restore, and optional Milvus |
+| `memory_core_v1` | API 1.4.0 | Working source | Canonical memory contracts, evidence, state transitions, idempotency, Outbox, and retrieval services |
+| Milvus Add-on | 0.6.0 optional | Optional / experimental boundary | Real isolated Milvus write, retrieval, metadata checks, and zero-difference reconcile; production aliases are forbidden |
+
+This is a **public beta**. SQLite-only personal use is the primary path. Milvus requires separate test resources and explicit configuration.
+
+## What problem it solves
+
+Most chat exports are noisy: plans change, decisions are revised, assistant guesses are mixed with user decisions, and old facts remain next to current facts. Simply embedding every message creates a searchable dump, not a reliable memory layer.
+
+This project uses this chain:
+
+1. The Cleaner receives one explicitly authorized conversation JSONL file.
+2. It extracts evidence-backed candidates and separates current state, superseded history, tasks, open questions, and conflicts.
+3. A human or the narrowly scoped auto-approval rule approves only safe user decisions or preferences.
+4. The Database Skill independently revalidates the approval artifacts, writes canonical rows to SQLite, and records an Outbox.
+5. The Database Skill processes the derived FTS/Milvus index and returns bounded context.
+6. The caller's LLM writes the final answer.
+
+The database never invents the final answer. The Cleaner never writes canonical memory.
+
+## Quick start
+
+### 1. Clone
+
+```bash
+git clone https://github.com/where-password/conversation-memory-skills.git
+cd conversation-memory-skills
+```
+
+### 2. Run tests
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_all_tests.ps1
+```
+
+### 3. Install the Skills into a Codex home
+
+Database:
+
+```powershell
+skills\database-installer-core\scripts\install_skill.ps1 -CodexHome "$HOME\.codex"
+```
+
+Cleaner:
+
+```powershell
+skills\conversation-context-cleaner\scripts\install_skill.ps1 -CodexHome "$HOME\.codex"
+```
+
+The installers never copy databases, local workspaces, `.env`, tests, or caches into the installed Skill runtime.
+
+### 4. Clean a controlled export
+
+Use an authorized JSONL snapshot only. Do not paste private data into public Issues.
+
+```powershell
+skills\conversation-context-cleaner\scripts\context-cleaner.cmd clean plan --input-root <ROOT> --input <FILE> --workspace-root <WORKSPACE> --workspace-id <ID> --project-id <PROJECT> --source-id <SOURCE> --domain-profile generic --profile-version 1.0.0 --conversation-id <CONVERSATION> --boundary-type conversation_closed --boundary-evidence "authorized local test" --json
+```
+
+Apply the exact saved plan with its confirmation token. Then export a handoff, review it, and generate the approved batch.
+
+### 5. Create the database and preset
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd install plan --workspace-root <DB_WORKSPACE> --workspace-id <ID> --project-id <PROJECT> --domain-profile generic --owner-principal-id <OWNER> --plan-out <PLAN> --json
+```
+
+After applying the install plan, create a preset:
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd preset init --profile <CONNECTION_PROFILE> --json
+```
+
+### 6. Persist the handoff
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd handoff plan --preset <PRESET> --handoff-dir <HANDOFF> --source-id <SOURCE> --project-id <PROJECT> --json
+```
+
+Review the plan, then run `handoff apply` with the exact confirmation token.
+
+### 7. Retrieve context
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd context-pack --preset <PRESET> --query "your question" --json
+```
+
+Or start the read-only MCP server:
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd mcp --preset <PRESET>
+```
+
+MCP tools: `context`, `search`, `get_memory`, `health`.
+
+## Stable and optional paths
+
+### SQLite-only
+
+This is the recommended public path:
+
+- no Docker;
+- no Milvus;
+- no Embedding API required;
+- SQLite canonical plus FTS5;
+- preset-driven CLI and read-only MCP.
+
+### Milvus Add-on
+
+Milvus is a derived index, never the canonical source.
+
+- use only isolated test/staging collections and aliases;
+- production aliases are rejected;
+- the final package has been tested against a real local Milvus instance with an isolated collection;
+- the current verified real-Milvus test used deterministic local vectors to avoid external Embedding cost;
+- a real external Embedding provider remains user-configured and environment-specific.
+
+See `skills/database-installer-core/references/milvus-addon.md` and `references/mcp.md`.
+
+## Safety boundaries
+
+- The Cleaner accepts one explicit input file under one explicit input root.
+- No automatic filesystem or chat-file scanning.
+- No reading `.env` or `.secrets` by the installed runtime.
+- No production canonical writes without the Database Skill's independent checks.
+- No production Milvus alias switching.
+- No secret values in profiles or reports.
+- No automatic final-answer synthesis inside the Skills.
+- All destructive-looking database changes are logical state changes or derived-index writes; backups are created before restore/upgrade operations.
+
+## Validation
+
+- Conversation Cleaner: 154 tests.
+- Memory Core retained runtime/tests in this public tree: 155 passed, 1 skipped.
+- Database Skill: 44 tests.
+- Final cross-Skill acceptance: Cleaner -> database handoff -> SQLite -> Outbox -> real isolated Milvus -> retrieval.
+- Real Milvus acceptance: zero-difference reconcile.
+
+The real-Milvus report is kept outside the distributable Skills under `release/` or the release attachment process; tests never require production resources.
+
+## Repository layout
+
+```text
+skills/
+  conversation-context-cleaner/
+  database-installer-core/
+memory_core_v1/
+scripts/
+  run_all_tests.ps1
+  package_skills.py
+  validate_skills.py
+.github/
+  workflows/tests.yml
+  ISSUE_TEMPLATE/
+release/
+```
+
+## Community and limitations
+
+- Agent-host compatibility is not universal. Report the host, OS, Python version, and a redacted reproduction.
+- Cleaner extraction is deterministic and deliberately conservative; it is not a semantic oracle.
+- Context Pack retrieval quality is not represented by a single accuracy score.
+- A user LLM may still produce a poor final answer from good retrieval context.
+- Remote multi-tenant IAM/OAuth is intentionally out of scope.
+
+See `CONTRIBUTING.md`, `COMMUNITY.md`, `SECURITY.md`, and `DISCLAIMER.md`.
+
+## Attribution and license
+
+MIT License. See `LICENSE` and `NOTICE.md`.
+
+Copyright (c) 2026 wmmn (where-password).

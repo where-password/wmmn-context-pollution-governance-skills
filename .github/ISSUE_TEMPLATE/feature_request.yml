@@ -1,0 +1,13 @@
+name: Feature request
+description: Propose a narrow testable improvement
+title: '[Feature] '
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: Problem}
+    validations: {required: true}
+  - type: textarea
+    id: boundaries
+    attributes: {label: Security and data boundaries}
+    validations: {required: true}

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "database-installer-core"
+version = "0.6.0"
+description = "Local SQLite database installer and runtime manager Skill"
+requires-python = ">=3.11,<3.14"
+dependencies = ["pydantic>=2,<3"]
+
+[project.optional-dependencies]
+milvus = ["pymilvus==2.6.18"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --basetemp=work/.pytest-portable-v1"
+pythonpath = ["scripts", "../../memory_core_v1/src"]

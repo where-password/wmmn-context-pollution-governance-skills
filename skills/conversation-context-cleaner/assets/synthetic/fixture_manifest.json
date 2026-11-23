@@ -1,0 +1,25 @@
+{
+  "fixture_version": "1.0.1",
+  "synthetic": true,
+  "redacted": true,
+  "contract_version": "controlled_conversation_jsonl_v1_snapshot",
+  "conversation_id": "conv_synthetic_001",
+  "message_count": 6,
+  "expected_topic_segments": 2,
+  "expected_candidates": 5,
+  "expected_open_questions": 1,
+  "expected_candidate_types": ["constraint", "decision", "fact", "open_question", "solution"],
+  "contains_secrets": false,
+  "additional_fixtures": [
+    {
+      "file": "handoff_state_transition_conversation.jsonl",
+      "purpose": "memory upgrade state transition handoff pilot",
+      "conversation_id": "conv_synthetic_handoff_upgrade_001",
+      "message_count": 3,
+      "roles": ["user", "assistant", "user"],
+      "contains_secrets": false,
+      "expected_state_sequence": ["not_upgraded", "upgraded_32gb"],
+      "expected_handoff": "one supersedes write item referencing the historical non-upgrade observation"
+    }
+  ]
+}

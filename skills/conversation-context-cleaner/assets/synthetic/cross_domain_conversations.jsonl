@@ -1,0 +1,6 @@
+{"conversation_id":"conv_support_ops_001","message_id":"s001","role":"user","timestamp":"2026-11-21T14:00:00+08:00","sequence":0,"text":"DECISION: 采用分级响应流程。","attachments":[],"metadata":{"topic_key":"support","topic_boundary":true}}
+{"conversation_id":"conv_support_ops_001","message_id":"s002","role":"user","timestamp":"2026-11-21T14:01:00+08:00","sequence":1,"text":"REQUIREMENT: 所有退款请求必须在24小时内复核。","attachments":[],"metadata":{"topic_key":"support"}}
+{"conversation_id":"conv_support_ops_001","message_id":"s003","role":"user","timestamp":"2026-11-21T14:02:00+08:00","sequence":2,"text":"PREFERENCE: 优先使用邮件通知。","attachments":[],"metadata":{"topic_key":"support"}}
+{"conversation_id":"conv_sales_ops_002","message_id":"v001","role":"user","timestamp":"2026-11-21T14:10:00+08:00","sequence":0,"text":"DECISION: 采用分级折扣审批流程。","attachments":[],"metadata":{"topic_key":"sales","topic_boundary":true}}
+{"conversation_id":"conv_sales_ops_002","message_id":"v002","role":"user","timestamp":"2026-11-21T14:11:00+08:00","sequence":1,"text":"REQUIREMENT: 所有折扣必须经过经理审批。","attachments":[],"metadata":{"topic_key":"sales"}}
+{"conversation_id":"conv_sales_ops_002","message_id":"v003","role":"user","timestamp":"2026-11-21T14:12:00+08:00","sequence":2,"text":"PREFERENCE: 优先使用邮件通知。","attachments":[],"metadata":{"topic_key":"sales"}}

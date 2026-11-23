@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+work/.pytest-tmp/
+work/
+data/
+config/
+.venv/
+.secrets/
+.env
+*.sqlite3
+*.db
+*.log

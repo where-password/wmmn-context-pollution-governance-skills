@@ -1,0 +1,3 @@
+interface:
+  display_name: "Database Installer Core"
+  short_description: "Install and manage SQLite memory with an optional isolated Milvus Add-on"
