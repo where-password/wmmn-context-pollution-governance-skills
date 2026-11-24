@@ -26,5 +26,7 @@ def test_onboarding_is_shown_once_per_codex_home(tmp_path: Path) -> None:
     assert first["shown"] is True
     assert "对话清理" in first["message"]
     assert "数据库 Skill" in first["message"]
+    assert "wmmn · 我密码呢" in first["message"]
+    assert first["watermark"] == {"mark": "wmmn", "author": "我密码呢"}
     assert second["shown"] is False
     assert second["message"] is None

@@ -34,6 +34,8 @@ class OnboardingTests(unittest.TestCase):
             self.assertTrue(first["shown"])
             self.assertIn("对话清理", first["message"])
             self.assertIn("数据库 Skill", first["message"])
+            self.assertIn("wmmn · 我密码呢", first["message"])
+            self.assertEqual(first["watermark"], {"mark": "wmmn", "author": "我密码呢"})
             self.assertFalse(second["shown"])
             self.assertIsNone(second["message"])
             self.assertTrue(Path(first["state_path"]).is_file())

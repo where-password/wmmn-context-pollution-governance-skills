@@ -1,13 +1,17 @@
-# Conversation Memory Skills
+# WMMN 上下文污染治理
 
-[![tests](https://github.com/where-password/conversation-memory-skills/actions/workflows/tests.yml/badge.svg)](https://github.com/where-password/conversation-memory-skills/actions/workflows/tests.yml)
+**WMMN Context Pollution Governance Skills**
+
+[![tests](https://github.com/where-password/wmmn-context-pollution-governance-skills/actions/workflows/tests.yml/badge.svg)](https://github.com/where-password/wmmn-context-pollution-governance-skills/actions/workflows/tests.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**wmmn · 我密码呢**
 
 **把受控对话整理成可审查的知识，再存入本地、可检索、可审计的长期记忆。**
 
 **Clean controlled conversations into reviewable knowledge, then persist it in a local, searchable, auditable memory layer.**
 
-`wmmn · 我密码呢` maintains this public beta for personal, single-machine use. It is not a generic chatbot and it does not replace the user's LLM. The Skills split responsibilities so conversation cleaning, evidence review, database writes, indexing, retrieval, and final answer generation do not collapse into one opaque pipeline.
+wmmn (`我密码呢`) maintains this public beta for personal, single-machine use. It is not a generic chatbot and it does not replace the user's LLM. The Skills split responsibilities so conversation cleaning, evidence review, database writes, indexing, retrieval, and final answer generation do not collapse into one opaque pipeline.
 
 ## Status
 
@@ -46,6 +50,10 @@ The database never invents the final answer. The Cleaner never writes canonical 
 >
 > 两个 Skill 可以单独使用：已有数据库时可以只用对话清理；只整理内容时也可以不用数据库 Skill。建议两个一起使用，长期管理效果更完整。你想做什么，直接告诉我就行。
 >
+> ---
+>
+> wmmn · 我密码呢
+>
 
 这份说明由两个 Skill 共用的首次加载标记控制；GitHub 主页保留完整文本，方便用户随时查看。安装器或 Agent 只应在首次加载时展示它，不得在后续对话中重复。
 
@@ -55,8 +63,8 @@ The database never invents the final answer. The Cleaner never writes canonical 
 ### 1. Clone
 
 ```bash
-git clone https://github.com/where-password/conversation-memory-skills.git
-cd conversation-memory-skills
+git clone https://github.com/where-password/wmmn-context-pollution-governance-skills.git
+cd wmmn-context-pollution-governance-skills
 ```
 
 ### 2. Run tests
@@ -162,9 +170,9 @@ See `skills/database-installer-core/references/milvus-addon.md` and `references/
 
 ## Validation
 
-- Conversation Cleaner: 154 tests.
+- Conversation Cleaner: 155 tests.
 - Memory Core retained runtime/tests in this public tree: 153 passed, 3 skipped in the default non-Milvus CI path; 155 passed, 1 skipped when an isolated local Milvus test instance is available.
-- Database Skill: 44 tests.
+- Database Skill: 45 tests.
 - Final cross-Skill acceptance: Cleaner -> database handoff -> SQLite -> Outbox -> real isolated Milvus -> retrieval.
 - Real Milvus acceptance: zero-difference reconcile.
 
@@ -196,6 +204,10 @@ release/
 - Remote multi-tenant IAM/OAuth is intentionally out of scope.
 
 See `CONTRIBUTING.md`, `COMMUNITY.md`, `SECURITY.md`, and `DISCLAIMER.md`.
+
+## Visible watermark policy
+
+Each Skill shows `wmmn · 我密码呢` once in its first successful user-facing onboarding output for an installation. Later turns and conversations do not repeat the visible watermark. Machine-readable attribution remains in the onboarding result and state marker.
 
 ## Attribution and license
 

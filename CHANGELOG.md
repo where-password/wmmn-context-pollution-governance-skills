@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added a one-time first-load guide for the two independent Skills and linked it from the repository homepage.
+- Rebranded the public product as `WMMN 上下文污染治理` with the one-time `wmmn · 我密码呢` watermark.
 
 ## v1.5.1
 
