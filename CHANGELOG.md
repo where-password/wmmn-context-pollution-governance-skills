@@ -3,7 +3,8 @@
 ## v1.5.1
 
 - Fixed Windows checkout byte-instability for content-addressed demo fixtures.
-- Made the installer doctor test assert the documented Windows-only platform gate on non-Windows CI.
+- Made platform-sensitive installer and delivery-script tests assert or skip according to the documented Windows-only contract.
+- Canonicalized test path comparisons so Windows short-path aliases cannot create false failures.
 - Updated GitHub Actions runtime versions and corrected the documented test-count baseline.
 - Distributable Skill payloads are unchanged from v1.5.0.
 

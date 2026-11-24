@@ -250,6 +250,8 @@ class HandoffReviewCliTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp:
             workspace, handoff_dir, _ = _make_handoff(Path(temp))
+            workspace = workspace.resolve()
+            handoff_dir = handoff_dir.resolve()
             code, unknown_item = _run_cli(_decide_args(workspace, "approve", key="mwh_missing"))
             self.assertEqual(code, 2)
             self.assertEqual(unknown_item["status"], "blocked")

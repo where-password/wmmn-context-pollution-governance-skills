@@ -6,10 +6,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SCRIPT = ROOT / "scripts" / "install_skill.ps1"
 UNINSTALL_SCRIPT = ROOT / "scripts" / "uninstall_skill.ps1"
 BOOTSTRAP_SCRIPT = ROOT / "scripts" / "bootstrap_runtime.ps1"
+
+pytestmark = pytest.mark.skipif(sys.platform != "win32", reason="V1 delivery scripts target Windows")
 
 
 def _powershell_json(script: Path, *args: str, env: dict | None = None) -> tuple[int, dict]:

@@ -14,7 +14,8 @@ This is a CI and release-integrity patch. The two Skill ZIP payloads are unchang
 ## Fixed
 
 - Locked line endings for content-addressed JSON/JSONL fixtures, preventing Windows checkout hash mismatches.
-- Updated the platform doctor test to assert the documented Windows-only gate correctly.
+- Updated platform-sensitive doctor and delivery-script tests to follow the documented Windows-only contract.
+- Canonicalized Windows test paths to avoid short-path alias false failures.
 - Updated GitHub Actions action runtimes.
 - Clarified default CI versus optional isolated-Milvus test counts.
 

@@ -158,7 +158,7 @@ class HandoffUpgradePilotTests(unittest.TestCase):
             self.assertEqual(first["status"], "exported")
             self.assertTrue(first["changed"])
             output_dir = Path(first["output_dir"])
-            self.assertEqual(output_dir.parent, workspace / "conversation-cleaner" / "v1" / "handoffs")
+            self.assertEqual(output_dir.resolve().parent, (workspace / "conversation-cleaner" / "v1" / "handoffs").resolve())
 
             write_items = _records(output_dir / "memory_write_batch.jsonl")
             source_units = _records(output_dir / "source_units.jsonl")
