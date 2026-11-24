@@ -1,0 +1,5 @@
+# Keep content-addressed fixtures byte-stable across Windows and Unix checkouts.
+skills/database-installer-core/assets/demo/*.json text eol=lf
+skills/database-installer-core/assets/demo/*.jsonl text eol=lf
+skills/conversation-context-cleaner/assets/synthetic/*.json text eol=lf
+skills/conversation-context-cleaner/assets/synthetic/*.jsonl text eol=lf

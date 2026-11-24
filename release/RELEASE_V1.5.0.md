@@ -12,7 +12,7 @@
 ## Verified
 
 - Cleaner: 154 tests passed.
-- Memory Core public tree: 155 passed, 1 skipped.
+- Memory Core public tree: 153 passed, 3 skipped in the default non-Milvus CI path; 155 passed, 1 skipped when an isolated local Milvus test instance is available.
 - Database Skill: 44 tests passed.
 - Cross-Skill acceptance: PASS.
 - Real isolated Milvus: PASS, full reconcile with 0 differences.

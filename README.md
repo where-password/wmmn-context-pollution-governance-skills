@@ -148,7 +148,7 @@ See `skills/database-installer-core/references/milvus-addon.md` and `references/
 ## Validation
 
 - Conversation Cleaner: 154 tests.
-- Memory Core retained runtime/tests in this public tree: 155 passed, 1 skipped.
+- Memory Core retained runtime/tests in this public tree: 153 passed, 3 skipped in the default non-Milvus CI path; 155 passed, 1 skipped when an isolated local Milvus test instance is available.
 - Database Skill: 44 tests.
 - Final cross-Skill acceptance: Cleaner -> database handoff -> SQLite -> Outbox -> real isolated Milvus -> retrieval.
 - Real Milvus acceptance: zero-difference reconcile.

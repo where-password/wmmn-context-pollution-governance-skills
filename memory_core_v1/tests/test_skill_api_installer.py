@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import platform
 import sqlite3
 from pathlib import Path
 
@@ -35,7 +36,11 @@ MANIFEST = Path(__file__).resolve().parents[2] / "skills" / "database-installer-
 def test_doctor_and_demo_plan_are_read_only(tmp_path: Path) -> None:
     root = tmp_path / "workspace"
     health = doctor(root)
-    assert health.status == "ok"
+    if platform.system() == "Windows":
+        assert health.status == "ok"
+    else:
+        assert health.status == "blocked"
+        assert health.checks["os_windows"] is False
     assert health.checks["pydantic_v2"] is True
     assert health.details["pydantic_version"].split(".", 1)[0] == "2"
     plan = demo_plan(workspace_root=root, manifest_path=MANIFEST)

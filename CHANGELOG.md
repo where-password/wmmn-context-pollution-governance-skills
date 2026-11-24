@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.1
+
+- Fixed Windows checkout byte-instability for content-addressed demo fixtures.
+- Made the installer doctor test assert the documented Windows-only platform gate on non-Windows CI.
+- Updated GitHub Actions runtime versions and corrected the documented test-count baseline.
+- Distributable Skill payloads are unchanged from v1.5.0.
+
 ## v1.5.0
 
 - Added scoped read-only search, context, Context Pack, MCP, and health.
