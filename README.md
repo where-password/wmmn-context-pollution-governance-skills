@@ -1,6 +1,5 @@
 # WMMN 上下文污染治理
 
-**WMMN Context Pollution Governance Skills**
 
 [![tests](https://github.com/where-password/wmmn-context-pollution-governance-skills/actions/workflows/tests.yml/badge.svg)](https://github.com/where-password/wmmn-context-pollution-governance-skills/actions/workflows/tests.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
