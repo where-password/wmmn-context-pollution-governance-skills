@@ -5,6 +5,10 @@ description: Clean controlled conversation JSONL into review-only candidates, op
 
 # Conversation Context Cleaner
 
+## First-load user orientation
+
+On the first local invocation after installation, run `python <skill-root>/scripts/onboarding.py --json` before the user's substantive task. If the result has `shown=true`, present its `message` as the first short user-facing response, then continue with the user's task. If `shown=false`, do not mention onboarding again. The marker is shared by both Skills and must never be repeated per turn or per conversation. If command execution is unavailable, use the same message from the repository README once and do not repeat it.
+
 Use this Skill to turn one explicitly supplied controlled conversation JSONL file into a review-ready candidate package. The V1 implementation is deterministic and standard-library-only. It does not call an LLM, scan directories automatically, read `.env` or `.secrets`, or write production systems.
 
 ## Product position and V1.5.0 freeze

@@ -35,6 +35,21 @@ This project uses this chain:
 
 The database never invents the final answer. The Cleaner never writes canonical memory.
 
+## 首次使用说明
+
+首次成功加载任一 Skill 后，Agent 会展示一次以下说明；之后不会在每个对话中重复。
+
+> 已读取成功。这个工具包含两个相互独立的 Skill：
+>
+> - 对话清理：只处理你当前 Agent 中的对话，不处理微信、飞书等普通聊天记录。它会把 Agent 对话整理成更清楚、方便保存和使用的内容。
+> - 数据库 Skill：建立并维护本地数据库，用来保存需要长期保留的信息，也可以保存整理后的 Agent 对话，从而相对降低后续对话的上下文污染。完整功能需要 Embedding API、Docker 等基础环境，你的 Agent 可以协助检测、安装和配置；遇到系统权限或重启要求时会提示你处理。
+>
+> 两个 Skill 可以单独使用：已有数据库时可以只用对话清理；只整理内容时也可以不用数据库 Skill。建议两个一起使用，长期管理效果更完整。你想做什么，直接告诉我就行。
+>
+
+这份说明由两个 Skill 共用的首次加载标记控制；GitHub 主页保留完整文本，方便用户随时查看。安装器或 Agent 只应在首次加载时展示它，不得在后续对话中重复。
+
+
 ## Quick start
 
 ### 1. Clone

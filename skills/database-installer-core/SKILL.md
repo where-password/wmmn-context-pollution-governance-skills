@@ -5,6 +5,10 @@ description: Install and manage a local SQLite memory database and optional V1.5
 
 # Database Installer Core
 
+## First-load user orientation
+
+On the first local invocation after installation, run `python <skill-root>/scripts/onboarding.py --json` before the user's substantive task. If the result has `shown=true`, present its `message` as the first short user-facing response, then continue with the user's task. If `shown=false`, do not mention onboarding again. The marker is shared by both Skills and must never be repeated per turn or per conversation. If command execution is unavailable, use the same message from the repository README once and do not repeat it.
+
 Database Installer Core V1 is an installation and runtime manager for an external memory foundation. Package version `0.6.0` uses vendored `memory_core.skill_api` `1.4.0`. It can make durable local storage available, but it does not make an AI model stronger by itself. Answer quality still depends on downstream cleaning, evidence, state, query strategy, and the consuming Skill.
 
 ## Hard boundaries

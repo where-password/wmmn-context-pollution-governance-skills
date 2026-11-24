@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added a one-time first-load guide for the two independent Skills and linked it from the repository homepage.
+
 ## v1.5.1
 
 - Fixed Windows checkout byte-instability for content-addressed demo fixtures.
