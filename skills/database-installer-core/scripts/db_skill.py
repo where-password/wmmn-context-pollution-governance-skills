@@ -165,9 +165,9 @@ def _resolve_milvus_sync_profile(profile_path: str | Path, milvus_profile_path: 
 PERSONAL_PRESET_VERSION = "database-skill-personal-preset-v1"
 _PRESET_FIELDS = {
     "profile", "project_id", "source_id", "conversation_id", "handoff_dir",
-    "milvus_profile", "max_sensitivity", "owner",
+    "milvus_profile", "max_sensitivity", "owner", "route_file",
 }
-_PRESET_PATH_FIELDS = {"profile", "handoff_dir", "milvus_profile"}
+_PRESET_PATH_FIELDS = {"profile", "handoff_dir", "milvus_profile", "route_file"}
 
 
 def _load_personal_preset(preset_path: str | Path) -> dict[str, Any]:
@@ -238,6 +238,13 @@ def _preset_init_payload(args: argparse.Namespace) -> dict[str, Any]:
         "max_sensitivity": connection.max_sensitivity.value,
         "owner": "database-skill-sync",
     }
+    if getattr(args, "route_file", None):
+        route_path = Path(args.route_file).expanduser().resolve()
+        if not route_path.is_relative_to(workspace_root):
+            raise SkillApiBlocked("route file must stay inside workspace_root")
+        if not route_path.is_file() or route_path.is_symlink():
+            raise SkillApiBlocked("route file must be an existing regular file")
+        payload["route_file"] = Path(os.path.relpath(route_path, output.parent)).as_posix()
     rendered = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     previous = output.read_text(encoding="utf-8") if output.is_file() else None
     if previous is not None and previous != rendered and not args.force:
@@ -450,6 +457,15 @@ def _parser() -> argparse.ArgumentParser:
     context_pack_cmd.add_argument("--deep", action="store_true", help="Use the 8,000-token peak budget")
     context_pack_cmd.add_argument("--max-sensitivity", choices=("public", "internal", "private", "secret"))
 
+    context_auto_cmd = sub.add_parser("context-auto", help="Route a natural-language query to the configured memory projects")
+    context_auto_cmd.add_argument("--profile")
+    context_auto_cmd.add_argument("--preset")
+    context_auto_cmd.add_argument("--route-file")
+    context_auto_cmd.add_argument("--query", required=True)
+    context_auto_cmd.add_argument("--token-budget", type=int, default=3500)
+    context_auto_cmd.add_argument("--top-k", type=int, default=10)
+    context_auto_cmd.add_argument("--max-sensitivity", choices=("public", "internal", "private", "secret"))
+
     get_memory_cmd = sub.add_parser("get-memory", help="Read one scoped canonical memory")
     get_memory_cmd.add_argument("--profile")
     get_memory_cmd.add_argument("--preset")
@@ -468,12 +484,14 @@ def _parser() -> argparse.ArgumentParser:
     mcp_cmd.add_argument("--profile")
     mcp_cmd.add_argument("--preset")
     mcp_cmd.add_argument("--project-id")
+    mcp_cmd.add_argument("--route-file")
 
     preset_parser = sub.add_parser("preset", help="Personal preset operations")
     preset_sub = preset_parser.add_subparsers(dest="preset_action", required=True)
     preset_init = preset_sub.add_parser("init", help="Generate a secret-free personal preset")
     preset_init.add_argument("--profile", required=True)
     preset_init.add_argument("--output")
+    preset_init.add_argument("--route-file")
     preset_init.add_argument("--force", action="store_true")
 
     maintenance_parser = sub.add_parser("maintenance", help="Local audit-retention maintenance")
@@ -854,7 +872,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         _apply_preset_defaults(args)
-        personal_commands = {"search", "context", "context-pack", "get-memory", "health", "mcp"}
+        personal_commands = {"search", "context", "context-pack", "context-auto", "get-memory", "health", "mcp"}
         if args.command in personal_commands:
             _require_personal_args(args, ("profile",))
         elif args.command == "handoff" and args.handoff_action in {"plan", "apply"}:
@@ -1093,6 +1111,24 @@ def main(argv: list[str] | None = None) -> int:
             )
             return EXIT_OK
 
+        if args.command == "context-auto":
+            from context_router import build_auto_context
+
+            result = build_auto_context(
+                args.profile,
+                query=args.query,
+                route_file=args.route_file,
+                token_budget=args.token_budget,
+                top_k=args.top_k,
+                max_sensitivity=args.max_sensitivity,
+            )
+            _emit(
+                {"command": "context-auto", "result": result},
+                json_mode=json_mode,
+                secret_refs=_profile_secret_refs(args.profile),
+            )
+            return EXIT_OK
+
         if args.command == "get-memory":
             result = get_memory(
                 args.profile,
@@ -1123,7 +1159,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "mcp":
             from mcp_server import run_stdio
 
-            return run_stdio(args.profile, project_id=args.project_id)
+            return run_stdio(args.profile, project_id=args.project_id, route_file=args.route_file)
 
         if args.command == "start" or args.command == "stop":
             _emit(_not_applicable(args.command), json_mode=json_mode)

@@ -71,6 +71,8 @@ The database API creates a short-lived, SQLite-audited local grant limited to th
 
 ## Read-only retrieval and health
 
+- `context-auto --profile <PROFILE> --route-file <ROUTE> --query <TEXT> --json`: automatically select the operational, course, or both projects and return separately labeled Context Packs. The caller does not need to know project IDs.
+
 The installer connection profile can be passed directly to the retrieval commands. The Skill validates it, resolves the portable canonical SQLite path, maps capabilities, and adapts it to the query contract without writing a second profile file.
 
 - `memory-db search --profile <PROFILE> --query <TEXT> [--project-id <ID>] [--top-k 10] [--max-sensitivity <LEVEL>] --json`: returns `search_only` ranked hits. Internal memory IDs are not included in hits.

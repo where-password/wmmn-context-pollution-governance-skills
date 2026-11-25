@@ -27,6 +27,7 @@ Windows entry point: `scripts/memory-db.cmd`. Direct fallback: `python scripts/d
 - `search --profile <PROFILE> --query <TEXT> [--project-id <ID>] [--top-k 10] [--max-sensitivity public|internal|private|secret] [--max-content-chars 2000] --json`: return `search_only` hits to the caller's LLM. Hits do not include internal `memory_id`.
 - `context --profile <PROFILE> --query <TEXT> [--project-id <ID>] [--top-k 10] [--max-sensitivity <LEVEL>] [--max-content-chars 2000] --json`: return `context_only` retrieval context; no final answer is generated.
 - `context-pack --profile <PROFILE> --query <TEXT> [--token-budget 3500] [--deep] [--project-id <ID>] [--max-sensitivity <LEVEL>] --json`: return `context_pack` with current, conflict, history, source, and verification sections. `--deep` sets 8,000 tokens.
+- `context-auto --profile <PROFILE> --query <TEXT> [--route-file <ROUTE>] [--token-budget 3500] [--top-k 10] [--max-sensitivity <LEVEL>] --json`: route natural language to one or more configured projects and return separately labeled context packs. No project ID is required from the user. It is read-only.
 - `mcp --profile <PROFILE> [--project-id <ID>]`: start the newline-delimited JSON-RPC MCP stdio server. Do not combine this command with human-readable output parsing.
 - `get-memory --profile <PROFILE> --memory-id <ID> [--project-id <ID>] [--max-sensitivity <LEVEL>] [--max-content-chars 4000] [--include-evidence-quote] --json`: return one active memory in the requested scope. Evidence quotes are omitted by default.
 - `health --profile <PROFILE> [--project-id <ID>] --json`: read-only schema, integrity, FTS, evidence, assertion, and Outbox checks.
@@ -76,8 +77,8 @@ The installer `ConnectionProfile` and an attached `skill-profile-v1` file are bo
 
 ## Personal preset and maintenance
 
-- `preset init --profile <PROFILE> [--output <PATH>] [--force] --json`: write a secret-free preset under the profile workspace. Default output is `config/personal-preset.json`.
-- `search|context|context-pack|get-memory|health|mcp --preset <PRESET>`: use preset profile/scope defaults when the corresponding flags are omitted.
+- `preset init --profile <PROFILE> [--output <PATH>] [--route-file <ROUTE>] [--force] --json`: write a secret-free preset under the profile workspace. Default output is `config/personal-preset.json`; `route_file` is optional.
+- `search|context|context-pack|context-auto|get-memory|health|mcp --preset <PRESET>`: use preset profile/scope defaults when the corresponding flags are omitted. A preset may also contain `route_file` for automatic routing.
 - `handoff plan|apply --preset <PRESET> --handoff-dir <DIR> [--source-id <ID>]`: preset can supply profile, project, source, and conversation scope.
 - `milvus sync --preset <PRESET> [--milvus-profile <PATH>]`: preset can supply the primary and attached Milvus profile paths.
 - `maintenance grants --preset <PRESET> [--retention-days 7] --json`: remove expired/revoked grants after the retention window; active and recent audit records remain.

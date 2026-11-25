@@ -41,6 +41,7 @@ Database Installer Core V1 is an installation and runtime manager for an externa
 - `search` / `context`: return scoped ranked hits or context only; the caller's LLM owns synthesis and final answer wording.
 - `get-memory`: return one scoped active memory with citation metadata; evidence quotes require an explicit flag.
 - `health`: run scoped read-only canonical, FTS, evidence, assertion, and Outbox diagnostics.
+- `context-auto`: route a natural-language query to configured operational/course projects and return labeled Context Packs; users do not supply project IDs. Read `references/context-auto.md` for the policy format.
 - `context-pack`: build a 3,500-token default Context Pack with current, conflict, history, source, and verification sections; `--deep` raises the explicit peak budget to 8,000.
 - `mcp`: start a stdio MCP server exposing only `context`, `search`, `get_memory`, and `health`.
 - `preset init` / `--preset`: generate and reuse a secret-free personal preset for repeated commands.

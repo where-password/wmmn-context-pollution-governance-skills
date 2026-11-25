@@ -21,6 +21,7 @@ if VENDOR_CORE.is_dir() and VENDOR_MIGRATIONS.is_dir():
         sys.path.insert(0, str(VENDOR_ROOT))
     os.environ.setdefault("MEMORY_CORE_MIGRATIONS_DIR", str(VENDOR_MIGRATIONS))
 
+from context_router import build_auto_context  # noqa: E402
 from memory_core.skill_api import (  # noqa: E402
     SkillApiBlocked,
     SkillBackend,
@@ -40,9 +41,10 @@ SUPPORTED_PROTOCOL_VERSIONS = {"2024-11-05", "2025-03-26", "2025-06-18"}
 
 
 class MemoryDatabaseMcpServer:
-    def __init__(self, profile_path: str | Path, *, project_id: str | None = None) -> None:
+    def __init__(self, profile_path: str | Path, *, project_id: str | None = None, route_file: str | Path | None = None) -> None:
         self.profile_path = Path(profile_path).expanduser().resolve()
         self.project_id = project_id
+        self.route_file = Path(route_file).expanduser().resolve() if route_file else None
         self._read_index: Any | None = None
         self._embedding: Any | None = None
         self._adapters_loaded = False
@@ -81,6 +83,28 @@ class MemoryDatabaseMcpServer:
                             "default": 3500,
                         },
                         **common_scope,
+                    },
+                    "required": ["query"],
+                    "additionalProperties": False,
+                },
+            },
+            {
+                "name": "context_auto",
+                "description": "Use first for any memory-dependent question. Route natural language to the configured operational conversation, course knowledge, or both, and return labeled context without writing.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "minLength": 1},
+                        "token_budget": {
+                            "type": "integer",
+                            "minimum": 1000,
+                            "maximum": 8000,
+                            "default": 3500,
+                        },
+                        "max_sensitivity": {
+                            "type": "string",
+                            "enum": ["public", "internal", "private", "secret"],
+                        },
                     },
                     "required": ["query"],
                     "additionalProperties": False,
@@ -146,6 +170,17 @@ class MemoryDatabaseMcpServer:
                     read_index=read_index,
                     embedding=embedding,
                 ).model_dump(mode="json")
+            elif name == "context_auto":
+                read_index, embedding = self._adapters()
+                result = build_auto_context(
+                    self.profile_path,
+                    query=str(arguments.get("query", "")),
+                    route_file=self.route_file,
+                    token_budget=int(arguments.get("token_budget", 3500)),
+                    max_sensitivity=arguments.get("max_sensitivity"),
+                    read_index=read_index,
+                    embedding=embedding,
+                )
             elif name == "search":
                 read_index, embedding = self._adapters()
                 result = search_memory(
@@ -248,8 +283,8 @@ class MemoryDatabaseMcpServer:
         return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 
-def run_stdio(profile_path: str | Path, *, project_id: str | None = None) -> int:
-    server = MemoryDatabaseMcpServer(profile_path, project_id=project_id)
+def run_stdio(profile_path: str | Path, *, project_id: str | None = None, route_file: str | Path | None = None) -> int:
+    server = MemoryDatabaseMcpServer(profile_path, project_id=project_id, route_file=route_file)
     for line in sys.stdin:
         text = line.strip()
         if not text:
@@ -269,8 +304,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only MCP stdio server for database-installer-core")
     parser.add_argument("--profile", required=True)
     parser.add_argument("--project-id")
+    parser.add_argument("--route-file")
     args = parser.parse_args(argv)
-    return run_stdio(args.profile, project_id=args.project_id)
+    return run_stdio(args.profile, project_id=args.project_id, route_file=args.route_file)
 
 
 if __name__ == "__main__":

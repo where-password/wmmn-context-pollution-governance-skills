@@ -66,7 +66,7 @@ def test_mcp_tools_expose_context_search_memory_and_health(tmp_path: Path) -> No
 
     listed = server.handle_message({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
     names = {tool["name"] for tool in listed["result"]["tools"]}
-    assert names == {"context", "search", "get_memory", "health"}
+    assert names == {"context_auto", "context", "search", "get_memory", "health"}
 
     context_result = server.handle_message({
         "jsonrpc": "2.0",
@@ -77,6 +77,17 @@ def test_mcp_tools_expose_context_search_memory_and_health(tmp_path: Path) -> No
     context_payload = _json_text(context_result["result"])
     assert context_payload["mode"] == "context_pack"
     assert context_payload["current"]
+
+    auto_result = server.handle_message({
+        "jsonrpc": "2.0",
+        "id": 8,
+        "method": "tools/call",
+        "params": {"name": "context_auto", "arguments": {"query": "MCP", "token_budget": 3000}},
+    })
+    auto_payload = _json_text(auto_result["result"])
+    assert auto_payload["mode"] == "context_auto"
+    assert auto_payload["packs"][0]["source_label"] == "本地记忆"
+    assert auto_payload["packs"][0]["context_pack"]["current"]
 
     search_result = server.handle_message({
         "jsonrpc": "2.0",

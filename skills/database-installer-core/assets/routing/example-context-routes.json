@@ -1,0 +1,47 @@
+{
+  "contract_version": "context-auto-routes-v1",
+  "default_route_id": "ops_conversation",
+  "combination_patterns": [
+    "结合.*(课程|100集).*(当前|运维|对话)",
+    "(当前|运维|对话).*(课程|100集).*结合",
+    "两个都|都查|一起看"
+  ],
+  "routes": [
+    {
+      "route_id": "ops_conversation",
+      "source_label": "运维对话",
+      "project_id": "ops_security_current",
+      "threshold": 2,
+      "strong_patterns": [
+        "当前|现在|刚才|本次|我们|我(?:之前|刚才)?说过|决定|部署|域名|服务器|主机|授权|现场|运维|报错|端口|路径"
+      ],
+      "weak_patterns": [
+        "漏洞扫描|报告|平台规则|工具|技术"
+      ]
+    },
+    {
+      "route_id": "src_course",
+      "source_label": "100集课程",
+      "project_id": "src_100_course",
+      "threshold": 2,
+      "strong_patterns": [
+        "100\\s*集|课程|教程|老师|第\\s*\\d+\\s*集|课里|视频(?:里|中)|学过|补天.*课|SRC.*课"
+      ],
+      "weak_patterns": [
+        "SRC",
+        "工具",
+        "技术",
+        "平台规则",
+        "术语",
+        "漏洞类型",
+        "怎么用",
+        "原理",
+        "扫描器",
+        "POC",
+        "Nuclei",
+        "Burp",
+        "ARL"
+      ]
+    }
+  ]
+}

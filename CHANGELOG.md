@@ -4,6 +4,7 @@
 
 - Added a one-time first-load guide for the two independent Skills and linked it from the repository homepage.
 - Rebranded the public product as `WMMN 上下文污染治理` with the one-time `wmmn · 我密码呢` watermark.
+- Added deterministic natural-language `context-auto` routing between operational conversations and the 100-course knowledge project, with labeled read-only Context Packs.
 
 ## v1.5.1
 

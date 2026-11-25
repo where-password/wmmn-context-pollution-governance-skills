@@ -120,6 +120,14 @@ Review the plan, then run `handoff apply` with the exact confirmation token.
 
 ### 7. Retrieve context
 
+Use automatic routing when the project is not known:
+
+```powershell
+skills\database-installer-core\scripts\memory-db.cmd context-auto --preset <PRESET> --query "your question" --json
+```
+
+The router can select the current operational conversation project, the 100-course knowledge project, or both, and returns separately labeled Context Packs. It is read-only.
+
 ```powershell
 skills\database-installer-core\scripts\memory-db.cmd context-pack --preset <PRESET> --query "your question" --json
 ```
@@ -171,7 +179,7 @@ See `skills/database-installer-core/references/milvus-addon.md` and `references/
 
 - Conversation Cleaner: 155 tests.
 - Memory Core retained runtime/tests in this public tree: 153 passed, 3 skipped in the default non-Milvus CI path; 155 passed, 1 skipped when an isolated local Milvus test instance is available.
-- Database Skill: 45 tests.
+- Database Skill: 48 tests.
 - Final cross-Skill acceptance: Cleaner -> database handoff -> SQLite -> Outbox -> real isolated Milvus -> retrieval.
 - Real Milvus acceptance: zero-difference reconcile.
 

@@ -72,6 +72,16 @@ def test_search_context_get_memory_and_health_use_connection_profile(tmp_path: P
     assert payload["result"]["current"]
 
     code = db_skill.main([
+        "context-auto", "--profile", str(profile), "--query", "Synthetic",
+        "--token-budget", "3000", "--json",
+    ])
+    payload = _json_output(capsys)
+    assert code == 0
+    assert payload["result"]["mode"] == "context_auto"
+    assert payload["result"]["packs"][0]["source_label"] == "本地记忆"
+    assert payload["result"]["packs"][0]["context_pack"]["current"]
+
+    code = db_skill.main([
         "get-memory", "--profile", str(profile), "--memory-id", memory_id, "--json",
     ])
     payload = _json_output(capsys)
