@@ -11,6 +11,7 @@
       "route_id": "ops_conversation",
       "source_label": "运维对话",
       "project_id": "ops_security_current",
+      "domain_profile": "professional_conversation_v1",
       "threshold": 2,
       "strong_patterns": [
         "当前|现在|刚才|本次|我们|我(?:之前|刚才)?说过|决定|部署|域名|服务器|主机|授权|现场|运维|报错|端口|路径"
@@ -23,6 +24,7 @@
       "route_id": "src_course",
       "source_label": "100集课程",
       "project_id": "src_100_course",
+      "domain_profile": "src_course_knowledge_v1",
       "threshold": 2,
       "strong_patterns": [
         "100\\s*集|课程|教程|老师|第\\s*\\d+\\s*集|课里|视频(?:里|中)|学过|补天.*课|SRC.*课"

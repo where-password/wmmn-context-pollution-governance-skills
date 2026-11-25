@@ -55,6 +55,9 @@ def load_route_policy(path: str | Path) -> dict[str, Any]:
             raise SkillApiBlocked(f"route {route_id} project_id is required")
         strong = _as_pattern_list(item.get("strong_patterns"), f"route {route_id} strong_patterns")
         weak = _as_pattern_list(item.get("weak_patterns"), f"route {route_id} weak_patterns")
+        domain_profile = item.get("domain_profile")
+        if domain_profile is not None and (not isinstance(domain_profile, str) or not domain_profile.strip()):
+            raise SkillApiBlocked(f"route {route_id} domain_profile must be a non-empty string when supplied")
         threshold = item.get("threshold", 2)
         if isinstance(threshold, bool) or not isinstance(threshold, int) or threshold < 1:
             raise SkillApiBlocked(f"route {route_id} threshold must be a positive integer")
@@ -67,6 +70,7 @@ def load_route_policy(path: str | Path) -> dict[str, Any]:
             "route_id": route_id,
             "source_label": source_label,
             "project_id": project_id,
+            "domain_profile": domain_profile,
             "strong_patterns": strong,
             "weak_patterns": weak,
             "threshold": threshold,
@@ -94,6 +98,7 @@ def _single_project_policy(profile: Any) -> dict[str, Any]:
             "route_id": "default",
             "source_label": "本地记忆",
             "project_id": project_id,
+            "domain_profile": None,
             "strong_patterns": [],
             "weak_patterns": [],
             "threshold": 1,
@@ -125,6 +130,7 @@ def select_routes(query: str, policy: dict[str, Any], available_projects: set[st
             "route_id": route["route_id"],
             "source_label": route["source_label"],
             "project_id": route["project_id"],
+            "domain_profile": route.get("domain_profile") or None,
             "score": score,
             "matched": matched,
             "available": route["enabled"] and route["project_id"] in available_projects,
@@ -187,8 +193,12 @@ def build_auto_context(
     base, remainder = divmod(token_budget, total)
     for index, route in enumerate(selected):
         route_budget = base + (1 if index < remainder else 0)
+        route_profile = profile_value.model_copy(update={
+            "domain_profile": route.get("domain_profile") or profile_value.domain_profile,
+            "project_ids": (route["project_id"],),
+        })
         pack = build_context_pack(
-            profile,
+            route_profile,
             query=query,
             project_id=route["project_id"],
             token_budget=route_budget,
@@ -201,6 +211,7 @@ def build_auto_context(
             "route_id": route["route_id"],
             "source_label": route["source_label"],
             "project_id": route["project_id"],
+            "domain_profile": route_profile.domain_profile,
             "token_budget": route_budget,
             "context_pack": pack.model_dump(mode="json"),
         })

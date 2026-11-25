@@ -4,7 +4,7 @@
 
 ## Policy file
 
-The policy is a UTF-8 JSON file with `contract_version: context-auto-routes-v1`. Each route declares a stable route ID, a user-facing source label, a project ID, strong regex patterns (weight 3), weak regex patterns (weight 1), and a threshold. `default_route_id` is used when no route crosses its threshold. The example is `assets/routing/example-context-routes.json`.
+The policy is a UTF-8 JSON file with `contract_version: context-auto-routes-v1`. Each route declares a stable route ID, a user-facing source label, a project ID, an optional `domain_profile` override, strong regex patterns (weight 3), weak regex patterns (weight 1), and a threshold. `default_route_id` is used when no route crosses its threshold. The example is `assets/routing/example-context-routes.json`.
 
 ## Safety behavior
 
