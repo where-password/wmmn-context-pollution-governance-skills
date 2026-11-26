@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from context_router import load_route_policy, select_routes
+from context_router import load_route_policy, natural_search_query, select_routes
 
 POLICY = Path(__file__).resolve().parents[1] / "assets" / "routing" / "example-context-routes.json"
 PROJECTS = {"ops_security_current", "src_100_course"}
@@ -37,3 +37,13 @@ def test_router_skips_projects_missing_from_profile() -> None:
     result = select_routes("100集课程里 Nuclei 怎么用", policy, {"ops_security_current"})
     assert [item["route_id"] for item in result["selected"]] == ["ops_conversation"]
     assert any("not in the connection profile" in warning for warning in result["warnings"])
+
+
+def test_natural_search_query_extracts_cjk_and_tool_terms() -> None:
+    expanded = natural_search_query("当前运维安全对话中，毕设选题是否应该进入新数据库？")
+    assert "运维安全" in expanded
+    assert "毕设选题" in expanded
+    assert " OR " in expanded
+
+    tool = natural_search_query("100集里 Nuclei 怎么用")
+    assert "Nuclei" in tool

@@ -25,6 +25,8 @@
       "source_label": "100集课程",
       "project_id": "src_100_course",
       "domain_profile": "src_course_knowledge_v1",
+      "source_type": "sqlite_knowledge",
+      "source_path": "E:\\gpt---运维\\SRC课程知识库_100集\\01_数据库\\SRC课程知识库_100集.db",
       "threshold": 2,
       "strong_patterns": [
         "100\\s*集|课程|教程|老师|第\\s*\\d+\\s*集|课里|视频(?:里|中)|学过|补天.*课|SRC.*课"

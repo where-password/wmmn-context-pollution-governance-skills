@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from memory_core.skill_api import SkillApiBlocked, build_context_pack, load_database_profile
+from src100_source import query_sqlite_knowledge
 
 CONTRACT_VERSION = "context-auto-v1"
 ROUTE_POLICY_VERSION = "context-auto-routes-v1"
@@ -71,6 +72,8 @@ def load_route_policy(path: str | Path) -> dict[str, Any]:
             "source_label": source_label,
             "project_id": project_id,
             "domain_profile": domain_profile,
+            "source_type": item.get("source_type", "memory_profile"),
+            "source_path": item.get("source_path"),
             "strong_patterns": strong,
             "weak_patterns": weak,
             "threshold": threshold,
@@ -86,6 +89,35 @@ def load_route_policy(path: str | Path) -> dict[str, Any]:
     }
 
 
+def natural_search_query(query: str) -> str:
+    """Build a deterministic FTS query from a natural-language question."""
+    terms: list[str] = []
+    seen: set[str] = set()
+    for match in re.finditer(r"[A-Za-z0-9][A-Za-z0-9_.-]{1,}", query):
+        term = match.group(0)
+        key = term.casefold()
+        if key not in seen:
+            seen.add(key)
+            terms.append(term)
+    chunks = [match.group(0) for match in re.finditer(r"[\u3400-\u9fff]{2,}", query)]
+    for size in range(8, 2, -1):
+        for chunk in chunks:
+            for start in range(0, len(chunk) - size + 1):
+                term = chunk[start:start + size]
+                if term not in seen:
+                    seen.add(term)
+                    terms.append(term)
+                if len(terms) >= 80:
+                    break
+            if len(terms) >= 80:
+                break
+        if len(terms) >= 80:
+            break
+    if not terms:
+        return query.strip()
+    return " OR ".join('"' + term.replace('"', '""') + '"' for term in terms)
+
+
 def _single_project_policy(profile: Any) -> dict[str, Any]:
     if len(profile.project_ids) != 1:
         raise SkillApiBlocked("route policy is required when the profile has multiple projects")
@@ -99,6 +131,8 @@ def _single_project_policy(profile: Any) -> dict[str, Any]:
             "source_label": "本地记忆",
             "project_id": project_id,
             "domain_profile": None,
+            "source_type": "memory_profile",
+            "source_path": None,
             "strong_patterns": [],
             "weak_patterns": [],
             "threshold": 1,
@@ -114,7 +148,7 @@ def _score_route(query: str, route: dict[str, Any]) -> tuple[int, list[dict[str,
         for pattern in route[field]:
             if re.search(pattern, query, re.IGNORECASE):
                 score += weight
-                matched.append({"pattern": pattern, "weight": weight})
+                matched.append({"pattern": pattern, "weight": weight, "text": re.search(pattern, query, re.IGNORECASE).group(0)})
     return score, matched
 
 
@@ -131,6 +165,8 @@ def select_routes(query: str, policy: dict[str, Any], available_projects: set[st
             "source_label": route["source_label"],
             "project_id": route["project_id"],
             "domain_profile": route.get("domain_profile") or None,
+            "source_type": route.get("source_type", "memory_profile"),
+            "source_path": route.get("source_path"),
             "score": score,
             "matched": matched,
             "available": route["enabled"] and route["project_id"] in available_projects,
@@ -189,10 +225,50 @@ def build_auto_context(
         index for index, route in enumerate(policy["routes"]) if route["route_id"] == item["route_id"]
     ))
     packs = []
-    total = len(selected)
-    base, remainder = divmod(token_budget, total)
-    for index, route in enumerate(selected):
-        route_budget = base + (1 if index < remainder else 0)
+    memory_routes = [route for route in selected if route.get("source_type", "memory_profile") == "memory_profile"]
+    if memory_routes and token_budget < 1000 * len(memory_routes):
+        raise SkillApiBlocked(f"token_budget must be at least {1000 * len(memory_routes)} for selected memory routes")
+    total = len(memory_routes)
+    base, remainder = divmod(token_budget, total) if total else (0, 0)
+    memory_index = 0
+    for route in selected:
+        if route.get("source_type", "memory_profile") == "sqlite_knowledge":
+            if not route.get("source_path"):
+                raise SkillApiBlocked("sqlite knowledge route requires source_path")
+            generic_course_terms = {"怎么用", "工具", "技术", "SRC", "原理"}
+            topic_terms = [
+                item["text"] for item in route.get("matched", [])
+                if item.get("weight") == 1 and item["text"] not in generic_course_terms
+            ]
+            if topic_terms:
+                source_pack = query_sqlite_knowledge(
+                    route["source_path"],
+                    query=query,
+                    search_query=natural_search_query(" ".join(topic_terms)),
+                    top_k=top_k,
+                )
+            else:
+                source_pack = {
+                    "mode": "source_context",
+                    "source_type": "sqlite_knowledge",
+                    "source_path": route["source_path"],
+                    "query": query,
+                    "hits": [],
+                    "evidence_completeness": "no_evidence",
+                    "warnings": ["course route selected without a topic-specific search term"],
+                    "write_performed": False,
+                }
+            packs.append({
+                "route_id": route["route_id"],
+                "source_label": route["source_label"],
+                "project_id": route["project_id"],
+                "domain_profile": route.get("domain_profile") or None,
+                "source_type": "sqlite_knowledge",
+                "source_pack": source_pack,
+            })
+            continue
+        route_budget = base + (1 if memory_index < remainder else 0)
+        memory_index += 1
         route_profile = profile_value.model_copy(update={
             "domain_profile": route.get("domain_profile") or profile_value.domain_profile,
             "project_ids": (route["project_id"],),
@@ -200,6 +276,7 @@ def build_auto_context(
         pack = build_context_pack(
             route_profile,
             query=query,
+            search_query=natural_search_query(query),
             project_id=route["project_id"],
             token_budget=route_budget,
             max_sensitivity=max_sensitivity,
@@ -212,6 +289,7 @@ def build_auto_context(
             "source_label": route["source_label"],
             "project_id": route["project_id"],
             "domain_profile": route_profile.domain_profile,
+            "source_type": "memory_profile",
             "token_budget": route_budget,
             "context_pack": pack.model_dump(mode="json"),
         })

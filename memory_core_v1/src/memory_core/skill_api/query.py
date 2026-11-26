@@ -314,6 +314,7 @@ def query_context(
     profile: ConnectionProfile | DatabaseProfile | str | Path,
     *,
     query: str,
+    search_query: str | None = None,
     project_id: str | None = None,
     top_k: int = 10,
     max_sensitivity: str | None = None,
@@ -324,7 +325,8 @@ def query_context(
     profile_value = _profile(profile)
     if "query" not in profile_value.capabilities:
         raise SkillApiBlocked("profile capabilities do not allow query")
-    text = query.strip()
+    display_query = query.strip()
+    text = (search_query or query).strip()
     if not text:
         raise SkillApiBlocked("query must not be empty")
     if not 1 <= top_k <= 100:
@@ -354,7 +356,7 @@ def query_context(
         if "memory_fts" not in table_names or "memory_items" not in table_names:
             raise SkillApiBlocked("canonical database does not expose FTS and memory_items")
         if len(text) >= 3:
-            term = '"' + text.replace('"', '""') + '"'
+            term = search_query.strip() if search_query is not None else ('"' + text.replace('"', '""') + '"')
             rows.extend(connection.execute(
                 f"""SELECT m.memory_id,m.content,m.memory_type,m.subtype,m.importance,m.sensitivity,
                            m.visibility,m.assertion_source,m.verification_state,m.source_scope_json,
@@ -421,7 +423,7 @@ def query_context(
     completeness: Literal["not_assessed", "partial", "no_evidence"] = "no_evidence" if not hits else "partial"
     return QueryContextResult(
         backend=profile_value.backend,
-        query=text,
+        query=display_query,
         evidence_completeness=completeness,
         hits=hits,
         warnings=warnings,
@@ -579,6 +581,7 @@ def build_context_pack(
     token_budget: int = 3500,
     max_sensitivity: str | None = None,
     top_k: int = 20,
+    search_query: str | None = None,
     read_index: Any | None = None,
     embedding: Any | None = None,
 ) -> ContextPackResult:
@@ -592,6 +595,7 @@ def build_context_pack(
     context = query_context(
         profile_value,
         query=query,
+        search_query=search_query,
         project_id=project_id,
         top_k=top_k,
         max_sensitivity=max_sensitivity,

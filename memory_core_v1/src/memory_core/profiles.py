@@ -110,6 +110,18 @@ class GenericProfile:
         return f"Synthesize a grounded {task_type} answer from workspace memory evidence."
 
 
+class ProfessionalConversationProfile(GenericProfile):
+    profile_id = "professional_conversation_v1"
+    version = "1.0.0"
+    domain = "professional"
+
+
+class SrcCourseKnowledgeProfile(GenericProfile):
+    profile_id = "src_course_knowledge_v1"
+    version = "1.0.0"
+    domain = "src_course_knowledge"
+
+
 class NovelProfile(GenericProfile):
     profile_id = "novel"
     version = "1.0.0"
@@ -219,6 +231,8 @@ class NovelProfile(GenericProfile):
 _PROFILES: dict[tuple[str, str], DomainProfile] = {
     ("generic", GenericProfile.version): GenericProfile(),
     ("novel", NovelProfile.version): NovelProfile(),
+    ("professional_conversation_v1", ProfessionalConversationProfile.version): ProfessionalConversationProfile(),
+    ("src_course_knowledge_v1", SrcCourseKnowledgeProfile.version): SrcCourseKnowledgeProfile(),
 }
 
 
