@@ -1,6 +1,6 @@
 {
   "contract_version": "context-auto-routes-v1",
-  "default_route_id": "ops_conversation",
+  "default_route_id": "conversation",
   "combination_patterns": [
     "结合.*(课程|100集).*(当前|运维|对话)",
     "(当前|运维|对话).*(课程|100集).*结合",
@@ -8,9 +8,9 @@
   ],
   "routes": [
     {
-      "route_id": "ops_conversation",
+      "route_id": "conversation",
       "source_label": "运维对话",
-      "project_id": "ops_security_current",
+      "project_id": "conversation_project",
       "domain_profile": "professional_conversation_v1",
       "threshold": 2,
       "strong_patterns": [
@@ -21,12 +21,12 @@
       ]
     },
     {
-      "route_id": "src_course",
+      "route_id": "course",
       "source_label": "100集课程",
-      "project_id": "src_100_course",
+      "project_id": "course_project",
       "domain_profile": "src_course_knowledge_v1",
       "source_type": "sqlite_knowledge",
-      "source_path": "E:\\gpt---运维\\SRC课程知识库_100集\\01_数据库\\SRC课程知识库_100集.db",
+      "source_path": "<PATH_TO_SRC100_DB>",
       "threshold": 2,
       "strong_patterns": [
         "100\\s*集|课程|教程|老师|第\\s*\\d+\\s*集|课里|视频(?:里|中)|学过|补天.*课|SRC.*课"
